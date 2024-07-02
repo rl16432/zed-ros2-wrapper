@@ -78,8 +78,8 @@ endif()
 
 #############################################
 # Dependencies
-find_package(ZED 4 REQUIRED)
-find_package(CUDA REQUIRED)
+# find_package(ZED 4 REQUIRED)
+# find_package(CUDA REQUIRED)
 
 find_package(ament_cmake_auto REQUIRED)
 ament_auto_find_build_dependencies()
@@ -87,7 +87,7 @@ ament_auto_find_build_dependencies()
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(rcutils REQUIRED)
-find_package(zed_components REQUIRED)
+# find_package(zed_components REQUIRED)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -103,7 +103,7 @@ add_custom_target(all_${PROJECT_NAME}_files SOURCES ${all_files})
 ###############################################################################
 # INCLUDES and LIBS
 include_directories(
-  ${CUDA_INCLUDE_DIRS}
+  # ${CUDA_INCLUDE_DIRS}
   ${ZED_INCLUDE_DIRS}
   ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
@@ -117,19 +117,22 @@ set(ZED_WRAPPER_SRC
 ###############################################################################
 # Bin and Install
 
-add_executable(zed_wrapper
-  ${ZED_WRAPPER_SRC}
-)
-ament_target_dependencies(zed_wrapper
-  rclcpp
-  rclcpp_components
-  zed_components
-)
-install(TARGETS zed_wrapper
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION lib/${PROJECT_NAME}
-)
+# add_executable(zed_wrapper
+#   ${ZED_WRAPPER_SRC}
+# )
+
+# ament_target_dependencies(
+#   zed_wrapper
+#   rclcpp
+#   rclcpp_components
+#   zed_components
+# )
+
+# install(TARGETS zed_wrapper
+#   ARCHIVE DESTINATION lib
+#   LIBRARY DESTINATION lib
+#   RUNTIME DESTINATION lib/${PROJECT_NAME}
+# )
 
 # Install PARAMS files
 install(DIRECTORY
@@ -140,6 +143,12 @@ install(DIRECTORY
 # Install URDF files
 install(DIRECTORY
   urdf
+  DESTINATION share/${PROJECT_NAME}
+)
+
+# Install URDF files
+install(DIRECTORY
+  gazebo
   DESTINATION share/${PROJECT_NAME}
 )
 
