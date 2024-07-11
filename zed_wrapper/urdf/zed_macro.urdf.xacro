@@ -28,7 +28,7 @@
       - model: the type of camera, one of zed, zedm, zed2, zed2i, zedx, zedxm, virtual
       - enable_gnss: if true enable the URDF link
   -->
-  <xacro:macro name="zed_camera" params="parent robot_name:=zed name=zed model=zed enable_gnss=false custom_baseline=0 *origin gazebo:=false">
+  <xacro:macro name="zed_camera" params="parent robot_name:=zed name=zed model=zed enable_gnss=false custom_baseline=0 *origin gazebo:=false image_width:=1920 image_height:=1080 fps:=30">
     <xacro:if value="${model == 'zed'}">
       <xacro:property name="baseline" value="0.12" />
       <xacro:property name="height" value="0.03" />
@@ -227,9 +227,9 @@
         reference_link="${name}_camera_link"
         left_frame="${name}_left_camera_frame"
         right_frame="${name}_right_camera_frame"
-        width="1920"
-        height="1080"
-        fps="30"
+        width="${image_width}"
+        height="${image_height}"
+        fps="${fps}"
       />
     </xacro:if>
   </xacro:macro>
