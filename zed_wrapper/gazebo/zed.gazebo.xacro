@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+
+<!--
+License: Apache 2.0. See LICENSE file in root directory.
+Copyright(c) 2017 PAL Robotics, S.L. All Rights Reserved
+
+This is the Gazebo URDF model for the ZED Stereo Camera
+-->
+
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <xacro:macro name="gazebo_zed"
+    params="robot_name camera_name reference_link left_frame right_frame
+      width height fps">
+
+    <!-- Load parameters to model's main link-->
+    <xacro:property name="deg_to_rad" value="0.01745329251994329577" />
+    <gazebo reference="${reference_link}">
+
+      <sensor name="${robot_name}_${camera_name}_left" type="camera">
+        <pose relative_to="${left_frame}">0 0 0 0 0 0</pose>
+        <camera name="__default__">
+          <camera_info_topic>${robot_name}/${camera_name}/left/camera_info</camera_info_topic>
+          <horizontal_fov>${110*deg_to_rad}</horizontal_fov>
+          <vertical_fov>${70*deg_to_rad}</vertical_fov>
+          <image>
+            <width>${width}</width>
+            <height>${height}</height>
+            <format>RGB_INT8</format>
+          </image>
+          <clip>
+            <near>0.1</near>
+            <far>100</far>
+          </clip>
+          <noise>
+            <type>gaussian</type>
+            <mean>0.0</mean>
+            <stddev>0.007</stddev>
+          </noise>
+        </camera>
+        <topic>${robot_name}/${camera_name}/left/image_raw</topic>
+        <always_on>1</always_on>
+        <update_rate>${fps}</update_rate>
+        <visualize>0</visualize>
+      </sensor>
+      <sensor name="${robot_name}_${camera_name}_right" type="camera">
+        <pose relative_to="${right_frame}">0 0 0 0 0 0</pose>
+        <camera name="__default__">
+          <camera_info_topic>${robot_name}/${camera_name}/right/camera_info</camera_info_topic>
+          <horizontal_fov>${110*deg_to_rad}</horizontal_fov>
+          <vertical_fov>${70*deg_to_rad}</vertical_fov>
+          <image>
+            <width>${width}</width>
+            <height>${height}</height>
+            <format>RGB_INT8</format>
+          </image>
+          <clip>
+            <near>0.1</near>
+            <far>100</far>
+          </clip>
+          <noise>
+            <type>gaussian</type>
+            <mean>0.0</mean>
+            <stddev>0.007</stddev>
+          </noise>
+        </camera>
+        <topic>${robot_name}/${camera_name}/right/image_raw</topic>
+        <always_on>1</always_on>
+        <update_rate>${fps}</update_rate>
+        <visualize>0</visualize>
+      </sensor>
+    </gazebo>
+
+  </xacro:macro>
+</robot>

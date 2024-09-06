@@ -18,6 +18,8 @@
 
 <robot xmlns:xacro="http://wiki.ros.org/xacro">
   <xacro:include filename="$(find zed_wrapper)/urdf/include/materials.urdf.xacro" />
+  <xacro:include filename="$(find zed_wrapper)/gazebo/zed.gazebo.xacro" />
+
   <xacro:property name="M_PI"     value="3.1415926535897931" />
 
   <!--
@@ -26,7 +28,7 @@
       - model: the type of camera, one of zed, zedm, zed2, zed2i, zedx, zedxm, virtual
       - enable_gnss: if true enable the URDF link
   -->
-  <xacro:macro name="zed_camera" params="name=zed model=zed enable_gnss=false custom_baseline=0 *gnss_origin">
+  <xacro:macro name="zed_camera" params="parent robot_name:=zed name=zed model=zed enable_gnss=false custom_baseline=0 *origin gazebo:=false image_width:=1920 image_height:=1080 fps:=30">
     <xacro:if value="${model == 'zed'}">
       <xacro:property name="baseline" value="0.12" />
       <xacro:property name="height" value="0.03" />
@@ -86,21 +88,26 @@
 
     <!-- Camera mounting point (the threaded screw hole in the bottom) -->
     <link name="${name}_camera_link" />
-    
+    <joint name="${name}_joint" type="fixed">
+      <xacro:insert_block name="origin" />
+      <parent link="${parent}"/>
+      <child link="${name}_camera_link" />
+    </joint>
+
     <!-- Camera Center -->
     <link name="${name}_camera_center">
       <xacro:unless value="${model == 'virtual'}">
         <visual>
           <origin xyz="${screw_offset_x} 0 ${screw_offset_z}" rpy="0 0 0"/>
           <geometry>
-            <mesh filename="package://zed_interfaces/meshes/${model}.stl" />
+            <mesh filename="file://$(find zed_interfaces)/meshes/${model}.stl" />
           </geometry>
           <material name="${model}_mat" />
         </visual>      
         <collision>
           <origin xyz="${screw_offset_x} 0 ${screw_offset_z}" rpy="0 0 0"/>
           <geometry>
-            <mesh filename="package://zed_interfaces/meshes/${model}.stl" />
+            <mesh filename="file://$(find zed_interfaces)/meshes/${model}.stl" />
           </geometry>
         </collision>
       </xacro:unless>
@@ -113,21 +120,21 @@
 
     <!-- Left Camera -->
     <link name="${name}_left_camera_frame">
-      <xacro:if value="${model == 'virtual'}">
+      <xacro:unless value="${model == 'virtual'}">
         <visual>
           <origin xyz="0 0 0" rpy="0 0 0"/>
           <geometry>
-            <mesh filename="package://zed_interfaces/meshes/${model}.stl" />
+            <mesh filename="file://$(find zed_interfaces)/meshes/${model}.stl" />
           </geometry>
           <material name="${model}_mat" />
         </visual>
         <collision>
           <origin xyz="0 0 0" rpy="0 0 0"/>
           <geometry>
-            <mesh filename="package://zed_interfaces/meshes/${model}.stl" />
+            <mesh filename="file://$(find zed_interfaces)/meshes/${model}.stl" />
           </geometry>
         </collision>
-      </xacro:if>
+      </xacro:unless>
     </link>
     <joint name="${name}_left_camera_joint" type="fixed">
       <parent link="${name}_camera_center"/>
@@ -144,21 +151,21 @@
 
     <!-- Right Camera -->
     <link name="${name}_right_camera_frame">
-      <xacro:if value="${model == 'virtual'}">
+      <xacro:unless value="${model == 'virtual'}">
         <visual>
           <origin xyz="0 0 0" rpy="0 0 0"/>
           <geometry>
-            <mesh filename="package://zed_interfaces/meshes/${model}.stl" />
+            <mesh filename="file://$(find zed_interfaces)/meshes/${model}.stl" />
           </geometry>
           <material name="${model}_mat" />
         </visual>      
         <collision>
           <origin xyz="0 0 0" rpy="0 0 0"/>
           <geometry>
-            <mesh filename="package://zed_interfaces/meshes/${model}.stl" />
+            <mesh filename="file://$(find zed_interfaces)/meshes/${model}.stl" />
           </geometry>
         </collision>
-      </xacro:if>
+      </xacro:unless>
     </link>
     <joint name="${name}_right_camera_joint" type="fixed">
       <parent link="${name}_camera_center"/>
@@ -209,9 +216,21 @@
       <joint name="${name}_gnss_joint" type="fixed">
         <parent link="${name}_camera_link"/>
         <child link="${name}_gnss_link"/>
-        <xacro:insert_block name="gnss_origin" />
+        <xacro:insert_block name="origin" />
       </joint>
     </xacro:if>
 
+    <xacro:if value="${gazebo}">
+      <xacro:gazebo_zed
+        robot_name="${robot_name}"
+        camera_name="${name}"
+        reference_link="${name}_camera_link"
+        left_frame="${name}_left_camera_frame"
+        right_frame="${name}_right_camera_frame"
+        width="${image_width}"
+        height="${image_height}"
+        fps="${fps}"
+      />
+    </xacro:if>
   </xacro:macro>
 </robot>
