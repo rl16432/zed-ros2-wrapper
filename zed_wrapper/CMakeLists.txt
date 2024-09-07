@@ -143,6 +143,12 @@ install(DIRECTORY
   DESTINATION share/${PROJECT_NAME}
 )
 
+# Install URDF files
+install(DIRECTORY
+  gazebo
+  DESTINATION share/${PROJECT_NAME}
+)
+
 # Install LAUNCH files
 install(DIRECTORY
   launch
